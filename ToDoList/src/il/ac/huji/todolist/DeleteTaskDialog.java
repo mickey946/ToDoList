@@ -8,21 +8,27 @@ import android.app.DialogFragment;
 import android.content.DialogInterface;
 import android.os.Bundle;
 
+/**
+ * Delete task dialog
+ *   
+ * @author mickey
+ */
 @SuppressLint({ "NewApi", "ValidFragment" })
 public class DeleteTaskDialog extends DialogFragment {
 
+	// position of the task in the list
 	private int _pos;
-	
+
 	@SuppressLint("ValidFragment")
 	public DeleteTaskDialog(int pos) {
 		super();
 		_pos = pos;
 	}
-	
+
 	public int getPos() {
 		return _pos;
 	}
-	
+
 	/* The activity that creates an instance of this dialog fragment must
 	 * implement this interface in order to receive event callbacks.
 	 * Each method passes the DialogFragment in case the host needs to query it. */

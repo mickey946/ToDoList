@@ -18,6 +18,13 @@ import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
 
+/**
+ * To Do list activity. A user can add a task to the end of a list (which is presented
+ * with alternating colors).
+ * With a long press on a task, the user would be asked to delete it (or not). 
+ * 
+ * @author mickey
+ */
 public class ToDoListActivity extends Activity implements DeleteTaskDialogListener {
 
 	ArrayAdapter<String> _adapter;
@@ -33,15 +40,15 @@ public class ToDoListActivity extends Activity implements DeleteTaskDialogListen
 		ListView listToDoTask = (ListView) findViewById(R.id.list_todo_tasks);
 		listToDoTask.setAdapter(_adapter);
 		listToDoTask.setOnItemLongClickListener(new OnItemLongClickListener() {
-            
+
 			@TargetApi(Build.VERSION_CODES.HONEYCOMB)
 			@SuppressLint("NewApi")
 			public boolean onItemLongClick(AdapterView<?> parent, View child, int pos, long id) {
 				DeleteTaskDialog deleteTaskDialog = new DeleteTaskDialog(pos);
 				deleteTaskDialog.show(getFragmentManager(), "deleteTask");
-                return true;
-            }
-        }); 
+				return true;
+			}
+		}); 
 	}
 
 	@Override
@@ -74,7 +81,7 @@ public class ToDoListActivity extends Activity implements DeleteTaskDialogListen
 				_adapter.notifyDataSetChanged();
 			}
 		}
-		
+
 		// remove the text from the edit view
 		editAddToDoTask.setText(null);
 	}
