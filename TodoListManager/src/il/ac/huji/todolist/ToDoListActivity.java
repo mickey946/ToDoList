@@ -44,7 +44,7 @@ public class ToDoListActivity extends Activity implements DeleteTaskDialogListen
 			@TargetApi(Build.VERSION_CODES.HONEYCOMB)
 			@SuppressLint("NewApi")
 			public boolean onItemLongClick(AdapterView<?> parent, View child, int pos, long id) {
-				DeleteTaskDialog deleteTaskDialog = new DeleteTaskDialog(pos);
+				DeleteTaskDialog deleteTaskDialog = new DeleteTaskDialog(pos, _listItems.get(pos));
 				deleteTaskDialog.show(getFragmentManager(), "deleteTask");
 				return true;
 			}

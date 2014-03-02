@@ -16,13 +16,14 @@ import android.os.Bundle;
 @SuppressLint({ "NewApi", "ValidFragment" })
 public class DeleteTaskDialog extends DialogFragment {
 
-	// position of the task in the list
-	private int _pos;
+	private int _pos; // position of the task in the list
+	private String _task; // the long-pressed task
 
 	@SuppressLint("ValidFragment")
-	public DeleteTaskDialog(int pos) {
+	public DeleteTaskDialog(int pos, String task) {
 		super();
 		_pos = pos;
+		_task = task;
 	}
 
 	public int getPos() {
@@ -59,7 +60,7 @@ public class DeleteTaskDialog extends DialogFragment {
 		// Use the Builder class for convenient dialog construction
 		AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
 		builder.setMessage(R.string.dialog_delete_todo_task)
-		.setTitle(R.string.dialog_delete_todo_task_title)
+		.setTitle(_task)
 		.setIcon(R.drawable.ic_action_discard)
 		.setPositiveButton(R.string.dialog_delete_button, new DialogInterface.OnClickListener() {
 			public void onClick(DialogInterface dialog, int id) {
