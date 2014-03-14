@@ -36,8 +36,8 @@ public class AddNewTodoItemActivity extends Activity {
 		long date = datePicker.getCalendarView().getDate();
 
 		Intent returnIntent = new Intent();
-		returnIntent.putExtra("task", task);
-		returnIntent.putExtra("date", date);
+		returnIntent.putExtra("title", task);
+		returnIntent.putExtra("dueDate", date);
 		setResult(Activity.RESULT_OK, returnIntent);  
 		finish();
 	}

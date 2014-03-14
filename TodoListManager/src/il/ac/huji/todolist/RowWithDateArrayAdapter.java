@@ -45,13 +45,18 @@ public class RowWithDateArrayAdapter extends ArrayAdapter<Pair<String, Long>>{
 
 		TextView taskDueDate = (TextView)convertView.findViewById(R.id.txtTodoDueDate);
 
-		long today = System.currentTimeMillis(), taskDue = _listItems.get(position).second;
+		Long today = System.currentTimeMillis(), taskDue = _listItems.get(position).second;
 
-		Date date = new Date(); 
-		date.setTime(taskDue);
-		String dueDate = DateFormat.getDateFormat(getContext()).format(date);
-
-		taskDueDate.setText(dueDate);
+		if (taskDue == null) { // should not happen
+			taskDueDate.setText(getContext().getResources().getString(R.string.no_due_date));
+		}
+		else {
+			Date date = new Date(); 
+			date.setTime(taskDue);
+			String dueDate = DateFormat.getDateFormat(getContext()).format(date);
+			taskDueDate.setText(dueDate);
+		}
+		
 
 		if (today - taskDue > 0) { // over due
 			taskTitle.setTextColor(Color.RED);
