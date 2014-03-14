@@ -8,16 +8,9 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context=".TodoListManagerActivity" >
 
-    <EditText
-        android:id="@+id/edit_add_todo_task"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:hint="@string/hint_edit_add_todo_task" />
-
     <ListView
         android:id="@+id/list_todo_tasks"
         android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/edit_add_todo_task" />
+        android:layout_height="wrap_content" />
 
 </RelativeLayout>

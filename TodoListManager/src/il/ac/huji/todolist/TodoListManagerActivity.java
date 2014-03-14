@@ -9,13 +9,14 @@ import android.os.Bundle;
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.Activity;
+import android.content.Intent;
+import android.util.Pair;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.ArrayAdapter;
-import android.widget.EditText;
 import android.widget.ListView;
 
 /**
@@ -27,15 +28,15 @@ import android.widget.ListView;
  */
 public class TodoListManagerActivity extends Activity implements DeleteTaskDialogListener {
 
-	ArrayAdapter<String> _adapter;
-	ArrayList<String> _listItems = new ArrayList<String>();
+	ArrayAdapter<Pair<String, Long>> _adapter;
+	ArrayList<Pair<String, Long>> _listItems = new ArrayList<Pair<String, Long>>();
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_to_do_list);
 
-		_adapter = new AlternateRowArrayAdapter(this, _listItems);
+		_adapter = new RowWithDateArrayAdapter(this, _listItems);
 
 		ListView listToDoTask = (ListView) findViewById(R.id.list_todo_tasks);
 		listToDoTask.setAdapter(_adapter);
@@ -44,7 +45,7 @@ public class TodoListManagerActivity extends Activity implements DeleteTaskDialo
 			@TargetApi(Build.VERSION_CODES.HONEYCOMB)
 			@SuppressLint("NewApi")
 			public boolean onItemLongClick(AdapterView<?> parent, View child, int pos, long id) {
-				ActionTaskDialog actionTaskDialog = new ActionTaskDialog(pos, _listItems.get(pos));
+				ActionTaskDialog actionTaskDialog = new ActionTaskDialog(pos, _listItems.get(pos).first);
 				actionTaskDialog.show(getFragmentManager(), "actionTask");
 				return true;
 			}
@@ -70,20 +71,28 @@ public class TodoListManagerActivity extends Activity implements DeleteTaskDialo
 		}
 	}
 
-	private void addTask() {
-		EditText editAddToDoTask = (EditText) findViewById(R.id.edit_add_todo_task);
-		String task = editAddToDoTask.getText().toString();
+	private static final int TASK_N_DATE = 15;
 
-		// add the item
-		if(task != null) {
-			if(task.length() > 0) {
-				_listItems.add(task);
-				_adapter.notifyDataSetChanged();
+	private void addTask() {
+		Intent intent = new Intent(this, AddNewTodoItemActivity.class);
+		startActivityForResult(intent, TASK_N_DATE);
+	}
+
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		// If the request went well (OK) and the request was TASK_N_DATE
+		if (resultCode == Activity.RESULT_OK && requestCode == TASK_N_DATE) {
+			String task = data.getStringExtra("task");
+			long date = data.getLongExtra("date", 0);
+			
+			// add the item
+			if(task != null) {
+				if(task.length() > 0) {
+					_listItems.add(new Pair<String, Long>(task, date));
+					_adapter.notifyDataSetChanged();
+				}
 			}
 		}
-
-		// remove the text from the edit view
-		editAddToDoTask.setText(null);
 	}
 
 	@Override
