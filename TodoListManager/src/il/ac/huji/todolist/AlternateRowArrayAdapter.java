@@ -1,5 +1,7 @@
 package il.ac.huji.todolist;
+
 import java.util.ArrayList;
+import java.util.Calendar;
 
 import android.content.Context;   
 import android.graphics.Color;  
@@ -19,11 +21,13 @@ public class AlternateRowArrayAdapter extends ArrayAdapter<String>{
 	private int[] colors = new int[] { 
 			Color.RED, Color.BLUE 
 	};
-	
-	private ArrayList<String> _listItems;
 
-	public AlternateRowArrayAdapter(Context context, int layout, ArrayList<String> listItems) {  
-		super(context, layout, listItems);
+	private ArrayList<String> _listItems;
+	private int _layout;
+
+	public AlternateRowArrayAdapter(Context context, ArrayList<String> listItems) {  
+		super(context, R.layout.todo_task, listItems);
+		_layout = R.layout.todo_task;
 		_listItems = listItems;
 	}
 
@@ -35,16 +39,22 @@ public class AlternateRowArrayAdapter extends ArrayAdapter<String>{
 		//		TextView textView = (TextView)super.getView(position, convertView, parent);  
 
 		LayoutInflater inflater = LayoutInflater.from(getContext());
-		
-		if (convertView == null) {
-			convertView = inflater.inflate(R.layout.todo_task, parent, false);
-			
+
+		if (convertView == null) { // new row
+			convertView = inflater.inflate(_layout, parent, false);
 		}
-		
-		TextView textView = (TextView)convertView.findViewById(R.id.todo_task_text);
-		textView.setText(_listItems.get(position));
+
+		TextView taskTitle = (TextView)convertView.findViewById(R.id.txtTodoTitle);
+		taskTitle.setText(_listItems.get(position));
 		int colorPos = position % colors.length;
-		textView.setTextColor(colors[colorPos]);
+		taskTitle.setTextColor(colors[colorPos]);
+
+		TextView taskDueDate = (TextView)convertView.findViewById(R.id.txtTodoDueDate);
+		Calendar calendar = Calendar.getInstance();
+		int day = calendar.get(Calendar.DATE),
+				mounth = calendar.get(Calendar.MONTH) + 1, // January = 0
+				year = calendar.get(Calendar.YEAR);
+		taskDueDate.setText(day + "/" + mounth + "/" + year);
 
 		return convertView;  
 	}  

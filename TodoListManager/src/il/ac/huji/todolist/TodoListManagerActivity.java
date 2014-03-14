@@ -1,6 +1,6 @@
 package il.ac.huji.todolist;
 
-import il.ac.huji.todolist.DeleteTaskDialog.DeleteTaskDialogListener;
+import il.ac.huji.todolist.ActionTaskDialog.DeleteTaskDialogListener;
 
 import java.util.ArrayList;
 
@@ -35,7 +35,7 @@ public class TodoListManagerActivity extends Activity implements DeleteTaskDialo
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_to_do_list);
 
-		_adapter = new AlternateRowArrayAdapter(this, R.layout.todo_task, _listItems);
+		_adapter = new AlternateRowArrayAdapter(this, _listItems);
 
 		ListView listToDoTask = (ListView) findViewById(R.id.list_todo_tasks);
 		listToDoTask.setAdapter(_adapter);
@@ -44,8 +44,8 @@ public class TodoListManagerActivity extends Activity implements DeleteTaskDialo
 			@TargetApi(Build.VERSION_CODES.HONEYCOMB)
 			@SuppressLint("NewApi")
 			public boolean onItemLongClick(AdapterView<?> parent, View child, int pos, long id) {
-				DeleteTaskDialog deleteTaskDialog = new DeleteTaskDialog(pos, _listItems.get(pos));
-				deleteTaskDialog.show(getFragmentManager(), "deleteTask");
+				ActionTaskDialog actionTaskDialog = new ActionTaskDialog(pos, _listItems.get(pos));
+				actionTaskDialog.show(getFragmentManager(), "actionTask");
 				return true;
 			}
 		}); 
@@ -87,13 +87,13 @@ public class TodoListManagerActivity extends Activity implements DeleteTaskDialo
 	}
 
 	@Override
-	public void onDialogPositiveClick(DeleteTaskDialog dialog) {
+	public void onDialogPositiveClick(ActionTaskDialog dialog) {
 		_listItems.remove(dialog.getPos());
 		_adapter.notifyDataSetChanged();
 	}
 
 	@Override
-	public void onDialogNegativeClick(DeleteTaskDialog dialog) {
+	public void onDialogNegativeClick(ActionTaskDialog dialog) {
 		// ignore
 	}
 }
