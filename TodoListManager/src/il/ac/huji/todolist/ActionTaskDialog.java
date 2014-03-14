@@ -8,11 +8,13 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
 import android.content.DialogInterface;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.widget.ListAdapter;
 
 /**
- * Delete task dialog
+ * Actions on task dialog
  *   
  * @author mickey
  */
@@ -88,7 +90,9 @@ public class ActionTaskDialog extends DialogFragment {
 					_listener.onDialogPositiveClick(ActionTaskDialog.this);
 				}
 				else if (which == CALL_POS) {
-					//TODO create call intent
+					Intent callIntent = new Intent(Intent.ACTION_DIAL);
+					callIntent.setData(Uri.parse("tel:" + _task.split(" ")[1]));
+					startActivity(callIntent);
 				}
 			}
 		})
