@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.Activity;
+import android.app.FragmentManager;
 import android.content.Intent;
 import android.util.Pair;
 import android.view.Menu;
@@ -28,14 +29,34 @@ import android.widget.ListView;
  */
 public class TodoListManagerActivity extends Activity implements DeleteTaskDialogListener {
 
+	private RetainedFragment<ArrayList<Pair<String, Long>>> _dataFragment;
+
 	ArrayAdapter<Pair<String, Long>> _adapter;
-	ArrayList<Pair<String, Long>> _listItems = new ArrayList<Pair<String, Long>>();
+	ArrayList<Pair<String, Long>> _listItems;//= new ArrayList<Pair<String, Long>>();
+
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_to_do_list);
 
+		// find the retained fragment on activity restarts
+		FragmentManager fm = getFragmentManager();
+		@SuppressWarnings("unchecked")
+		RetainedFragment<ArrayList<Pair<String, Long>>> findFragmentByTag = 
+				(RetainedFragment<ArrayList<Pair<String, Long>>>) fm.findFragmentByTag("dataMain");
+		_dataFragment = findFragmentByTag;
+
+		// create the fragment and data the first time
+		if (_dataFragment == null) {
+			// add the fragment
+			_dataFragment = new RetainedFragment<ArrayList<Pair<String, Long>>>();
+			fm.beginTransaction().add(_dataFragment, "dataMain").commit();
+			// create new list
+			_dataFragment.setData(new ArrayList<Pair<String, Long>>());
+		}
+
+		_listItems = _dataFragment.getData();
 		_adapter = new RowWithDateArrayAdapter(this, _listItems);
 
 		ListView listToDoTask = (ListView) findViewById(R.id.list_todo_tasks);
@@ -82,9 +103,9 @@ public class TodoListManagerActivity extends Activity implements DeleteTaskDialo
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		// If the request went well (OK) and the request was TASK_N_DATE
 		if (resultCode == Activity.RESULT_OK && requestCode == TASK_N_DATE) {
-			String task = data.getStringExtra("task");
-			long date = data.getLongExtra("date", 0);
-			
+			String task = data.getStringExtra("title");
+			long date = data.getLongExtra("dueDate", 0);
+
 			// add the item
 			if(task != null) {
 				if(task.length() > 0) {
@@ -104,5 +125,11 @@ public class TodoListManagerActivity extends Activity implements DeleteTaskDialo
 	@Override
 	public void onDialogNegativeClick(ActionTaskDialog dialog) {
 		// ignore
+	}
+
+	@Override
+	public void onDestroy() {
+		super.onDestroy();
+		_dataFragment.setData(_listItems);
 	}
 }
