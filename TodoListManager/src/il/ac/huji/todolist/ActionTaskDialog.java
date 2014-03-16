@@ -11,7 +11,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.util.Log;
 import android.widget.ListAdapter;
 
 /**
@@ -33,6 +32,8 @@ public class ActionTaskDialog extends DialogFragment {
 		super();
 		_pos = pos;
 		_task = task;
+		
+		setRetainInstance(true);
 	}
 
 	public int getPos() {
@@ -105,6 +106,13 @@ public class ActionTaskDialog extends DialogFragment {
 		});
 		// Create the AlertDialog object and return it
 		return builder.create();
+	}
+
+	@Override
+	public void onDestroyView() {
+		if (getDialog() != null && getRetainInstance())
+			getDialog().setDismissMessage(null);
+		super.onDestroyView();
 	}
 }
 

@@ -22,7 +22,7 @@
         android:layout_marginBottom="@dimen/activity_vertical_margin"
         android:layout_marginLeft="@dimen/activity_horizontal_margin"
         android:layout_marginRight="@dimen/activity_horizontal_margin" />
-    
+
     <View
         android:layout_width="fill_parent"
         android:layout_height="1dp"
@@ -43,7 +43,7 @@
             android:id="@+id/btnCancel"
             style="?android:attr/buttonBarButtonStyle"
             android:layout_width="0dip"
-            android:layout_height="wrap_content"
+            android:layout_height="fill_parent"
             android:layout_weight="1"
             android:onClick="cancel"
             android:text="@string/dialog_cancel_button" />
@@ -52,7 +52,7 @@
             android:id="@+id/btnOK"
             style="?android:attr/buttonBarButtonStyle"
             android:layout_width="0dip"
-            android:layout_height="wrap_content"
+            android:layout_height="fill_parent"
             android:layout_weight="1"
             android:onClick="add"
             android:text="@string/action_add_todo_task" />

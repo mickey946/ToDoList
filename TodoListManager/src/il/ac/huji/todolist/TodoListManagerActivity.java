@@ -30,10 +30,10 @@ import android.widget.ListView;
 public class TodoListManagerActivity extends Activity implements DeleteTaskDialogListener {
 
 	private RetainedFragment<ArrayList<Pair<String, Long>>> _dataFragment;
-
-	ArrayAdapter<Pair<String, Long>> _adapter;
-	ArrayList<Pair<String, Long>> _listItems;//= new ArrayList<Pair<String, Long>>();
-
+	private ArrayAdapter<Pair<String, Long>> _adapter;
+	private ArrayList<Pair<String, Long>> _listItems;
+	
+	private ActionTaskDialog _actionTaskDialog;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -66,8 +66,8 @@ public class TodoListManagerActivity extends Activity implements DeleteTaskDialo
 			@TargetApi(Build.VERSION_CODES.HONEYCOMB)
 			@SuppressLint("NewApi")
 			public boolean onItemLongClick(AdapterView<?> parent, View child, int pos, long id) {
-				ActionTaskDialog actionTaskDialog = new ActionTaskDialog(pos, _listItems.get(pos).first);
-				actionTaskDialog.show(getFragmentManager(), "actionTask");
+				_actionTaskDialog = new ActionTaskDialog(pos, _listItems.get(pos).first);
+				_actionTaskDialog.show(getFragmentManager(), "actionTask");
 				return true;
 			}
 		}); 
