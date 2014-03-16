@@ -1,5 +1,7 @@
 package il.ac.huji.todolist;
 
+import java.util.Date;
+
 import android.os.Bundle;
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -33,7 +35,7 @@ public class AddNewTodoItemActivity extends Activity {
 		String task = edtTask.getText().toString();
 
 		DatePicker datePicker = (DatePicker) findViewById(R.id.datePicker);
-		long date = datePicker.getCalendarView().getDate();
+		Date date = new Date(datePicker.getCalendarView().getDate());
 
 		Intent returnIntent = new Intent();
 		returnIntent.putExtra("title", task);

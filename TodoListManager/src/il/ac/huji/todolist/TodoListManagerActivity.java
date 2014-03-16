@@ -3,6 +3,7 @@ package il.ac.huji.todolist;
 import il.ac.huji.todolist.ActionTaskDialog.DeleteTaskDialogListener;
 
 import java.util.ArrayList;
+import java.util.Date;
 
 import android.os.Build;
 import android.os.Bundle;
@@ -104,7 +105,8 @@ public class TodoListManagerActivity extends Activity implements DeleteTaskDialo
 		// If the request went well (OK) and the request was TASK_N_DATE
 		if (resultCode == Activity.RESULT_OK && requestCode == TASK_N_DATE) {
 			String task = data.getStringExtra("title");
-			long date = data.getLongExtra("dueDate", 0);
+			Date ddate = (Date) data.getSerializableExtra("dueDate");
+			long date = ddate.getTime();
 
 			// add the item
 			if(task != null) {
