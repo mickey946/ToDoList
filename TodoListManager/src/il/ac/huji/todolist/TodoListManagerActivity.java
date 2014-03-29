@@ -2,23 +2,21 @@ package il.ac.huji.todolist;
 
 import il.ac.huji.todolist.ActionTaskDialog.DeleteTaskDialogListener;
 
-import java.util.ArrayList;
 import java.util.Date;
 
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.Activity;
-import android.app.FragmentManager;
 import android.content.Intent;
-import android.util.Pair;
+import android.database.Cursor;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemLongClickListener;
-import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
 /**
@@ -30,44 +28,38 @@ import android.widget.ListView;
  */
 public class TodoListManagerActivity extends Activity implements DeleteTaskDialogListener {
 
-	private RetainedFragment<ArrayList<Pair<String, Long>>> _dataFragment;
-	private ArrayAdapter<Pair<String, Long>> _adapter;
-	private ArrayList<Pair<String, Long>> _listItems;
-	
+	private TodoTaskCursorAdapter _adapter;
+	private TodoTaskSQLiteHelper _helper;
 	private ActionTaskDialog _actionTaskDialog;
+	private ListView _listToDoTask;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_to_do_list);
 
-		// find the retained fragment on activity restarts
-		FragmentManager fm = getFragmentManager();
-		@SuppressWarnings("unchecked")
-		RetainedFragment<ArrayList<Pair<String, Long>>> findFragmentByTag = 
-				(RetainedFragment<ArrayList<Pair<String, Long>>>) fm.findFragmentByTag("dataMain");
-		_dataFragment = findFragmentByTag;
+		_helper = new TodoTaskSQLiteHelper(this);
 
-		// create the fragment and data the first time
-		if (_dataFragment == null) {
-			// add the fragment
-			_dataFragment = new RetainedFragment<ArrayList<Pair<String, Long>>>();
-			fm.beginTransaction().add(_dataFragment, "dataMain").commit();
-			// create new list
-			_dataFragment.setData(new ArrayList<Pair<String, Long>>());
-		}
+		_listToDoTask = (ListView) findViewById(R.id.list_todo_tasks);
 
-		_listItems = _dataFragment.getData();
-		_adapter = new RowWithDateArrayAdapter(this, _listItems);
+		new Handler().post(new Runnable() {
 
-		ListView listToDoTask = (ListView) findViewById(R.id.list_todo_tasks);
-		listToDoTask.setAdapter(_adapter);
-		listToDoTask.setOnItemLongClickListener(new OnItemLongClickListener() {
+			@Override
+			public void run() {	
+				_adapter = new TodoTaskCursorAdapter(TodoListManagerActivity.this, 
+						_helper.getAllTasks());
+				_listToDoTask.setAdapter(_adapter);
+			}
+
+		});
+
+		_listToDoTask.setOnItemLongClickListener(new OnItemLongClickListener() {
 
 			@TargetApi(Build.VERSION_CODES.HONEYCOMB)
 			@SuppressLint("NewApi")
 			public boolean onItemLongClick(AdapterView<?> parent, View child, int pos, long id) {
-				_actionTaskDialog = new ActionTaskDialog(pos, _listItems.get(pos).first);
+				Cursor current = (Cursor)_adapter.getItem(pos);
+				_actionTaskDialog = new ActionTaskDialog(current.getInt(0), current.getString(1));
 				_actionTaskDialog.show(getFragmentManager(), "actionTask");
 				return true;
 			}
@@ -96,7 +88,7 @@ public class TodoListManagerActivity extends Activity implements DeleteTaskDialo
 	private static final int TASK_N_DATE = 15;
 
 	private void addTask() {
-		Intent intent = new Intent(this, AddNewTodoItemActivity.class);
+		Intent intent = new Intent(this, AddNewTodoTaskActivity.class);
 		startActivityForResult(intent, TASK_N_DATE);
 	}
 
@@ -111,8 +103,8 @@ public class TodoListManagerActivity extends Activity implements DeleteTaskDialo
 			// add the item
 			if(task != null) {
 				if(task.length() > 0) {
-					_listItems.add(new Pair<String, Long>(task, date));
-					_adapter.notifyDataSetChanged();
+					_helper.addTask(new TodoTask(task, date));
+					_adapter.changeCursor(_helper.getAllTasks());			
 				}
 			}
 		}
@@ -120,8 +112,8 @@ public class TodoListManagerActivity extends Activity implements DeleteTaskDialo
 
 	@Override
 	public void onDialogPositiveClick(ActionTaskDialog dialog) {
-		_listItems.remove(dialog.getPos());
-		_adapter.notifyDataSetChanged();
+		_helper.deleteTask(dialog.getPos());
+		_adapter.changeCursor(_helper.getAllTasks());
 	}
 
 	@Override
@@ -132,6 +124,5 @@ public class TodoListManagerActivity extends Activity implements DeleteTaskDialo
 	@Override
 	public void onDestroy() {
 		super.onDestroy();
-		_dataFragment.setData(_listItems);
 	}
 }

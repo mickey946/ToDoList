@@ -15,7 +15,7 @@ import android.widget.TextView;
  * 
  * @author mickey
  */
-public class AddNewTodoItemActivity extends Activity {
+public class AddNewTodoTaskActivity extends Activity {
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {

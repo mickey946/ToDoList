@@ -23,7 +23,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="il.ac.huji.todolist.AddNewTodoItemActivity"
+            android:name="il.ac.huji.todolist.AddNewTodoTaskActivity"
             android:label="@string/title_activity_add_new_todo_item"
             android:theme="@android:style/Theme.Holo.Light.Dialog" >
         </activity>
