@@ -19,6 +19,10 @@ public class TodoTask {
 		this._title = title;
 		this._due = due;
 	}
+	
+	public TodoTask(String title) {
+		this._title = title;
+	}
 
 	public int getID() {
 		return _id;

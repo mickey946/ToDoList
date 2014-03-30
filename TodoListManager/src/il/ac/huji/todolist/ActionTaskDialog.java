@@ -25,10 +25,10 @@ public class ActionTaskDialog extends DialogFragment {
 	private static final int CALL_POS = 1;
 
 	private int _pos; // position of the task in the list
-	private String _task; // the long-pressed task
+	private TodoTask _task; // the long-pressed task
 
 	@SuppressLint("ValidFragment")
-	public ActionTaskDialog(int pos, String task) {
+	public ActionTaskDialog(int pos, TodoTask task) {
 		super();
 		_pos = pos;
 		_task = task;
@@ -38,6 +38,10 @@ public class ActionTaskDialog extends DialogFragment {
 
 	public int getPos() {
 		return _pos;
+	}
+	
+	public TodoTask getTask() {
+		return _task;
 	}
 
 	/* The activity that creates an instance of this dialog fragment must
@@ -73,8 +77,8 @@ public class ActionTaskDialog extends DialogFragment {
 		actions.add(getResources().getString(R.string.dialog_delete_list_item));
 		images.add(R.drawable.ic_action_discard);
 
-		if(_task.startsWith(getResources().getString(R.string.dialog_call_list_item))) {
-			actions.add(_task);
+		if(_task.getTitle().startsWith(getResources().getString(R.string.dialog_call_list_item))) {
+			actions.add(_task.getTitle());
 			images.add(R.drawable.ic_action_call);
 		}
 
@@ -83,7 +87,7 @@ public class ActionTaskDialog extends DialogFragment {
 
 		// Use the Builder class for convenient dialog construction
 		AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-		builder.setTitle(_task)
+		builder.setTitle(_task.getTitle())
 		.setAdapter(adapter, new DialogInterface.OnClickListener() {
 
 			@Override
@@ -93,7 +97,7 @@ public class ActionTaskDialog extends DialogFragment {
 				}
 				else if (which == CALL_POS) {
 					Intent callIntent = new Intent(Intent.ACTION_DIAL);
-					callIntent.setData(Uri.parse("tel:" + _task.split(" ")[1]));
+					callIntent.setData(Uri.parse("tel:" + _task.getTitle().split(" ")[1]));
 					startActivity(callIntent);
 				}
 			}

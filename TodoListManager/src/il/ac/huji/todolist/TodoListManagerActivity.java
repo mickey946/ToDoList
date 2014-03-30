@@ -4,6 +4,8 @@ import il.ac.huji.todolist.ActionTaskDialog.DeleteTaskDialogListener;
 
 import java.util.Date;
 
+import com.parse.Parse;
+
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -38,7 +40,10 @@ public class TodoListManagerActivity extends Activity implements DeleteTaskDialo
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_to_do_list);
 
-		_helper = new TodoTaskSQLiteHelper(this);
+		// Initialize databases
+		_helper = TodoTaskSQLiteHelper.getInstanse(this);
+		Parse.initialize(this, "z6oaJ0v3LcRPapj4w3ZDJS7ImSl9beyDlATdGjtZ", 
+				"seCevpBGpkvBEmuUZyCHHaJAAqHGVitVwkw2dEEI");
 
 		_listToDoTask = (ListView) findViewById(R.id.list_todo_tasks);
 
@@ -59,7 +64,8 @@ public class TodoListManagerActivity extends Activity implements DeleteTaskDialo
 			@SuppressLint("NewApi")
 			public boolean onItemLongClick(AdapterView<?> parent, View child, int pos, long id) {
 				Cursor current = (Cursor)_adapter.getItem(pos);
-				_actionTaskDialog = new ActionTaskDialog(current.getInt(0), current.getString(1));
+				_actionTaskDialog = new ActionTaskDialog(current.getInt(0), 
+						new TodoTask(current.getString(1)));
 				_actionTaskDialog.show(getFragmentManager(), "actionTask");
 				return true;
 			}
