@@ -60,9 +60,25 @@ public class TodoTaskSQLiteHelper extends SQLiteOpenHelper {
 
 	@Override
 	public void onCreate(SQLiteDatabase database) {
+		// create local database
 		Log.i(TodoTaskSQLiteHelper.class.getName(), 
 				"Creating database");
 		database.execSQL(DATABASE_CREATE);
+		
+		// clear Parse database (delete all existing objects)
+		ParseQuery<ParseObject> query = ParseQuery.getQuery(_androidID);
+		query.whereExists("ID"); // actually this is all of the data
+		query.findInBackground(new FindCallback<ParseObject>() {
+		    public void done(List<ParseObject> tasks, ParseException e) {
+		        if (e == null) {
+		            for(ParseObject task : tasks) {
+		            	task.deleteEventually();
+		            }
+		        } else {
+		            // Well, shit.
+		        }
+		    }
+		});
 	}
 
 	@Override
