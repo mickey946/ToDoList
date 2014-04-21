@@ -4,7 +4,7 @@ import il.ac.huji.todolist.ActionTaskDialog.DeleteTaskDialogListener;
 
 import java.util.Date;
 
-import com.parse.Parse;
+//import com.parse.Parse;
 
 import android.os.Build;
 import android.os.Bundle;
@@ -42,8 +42,8 @@ public class TodoListManagerActivity extends Activity implements DeleteTaskDialo
 
 		// Initialize databases
 		_helper = TodoTaskSQLiteHelper.getInstanse(this);
-		Parse.initialize(this, "z6oaJ0v3LcRPapj4w3ZDJS7ImSl9beyDlATdGjtZ", 
-				"seCevpBGpkvBEmuUZyCHHaJAAqHGVitVwkw2dEEI");
+		//		Parse.initialize(this, "z6oaJ0v3LcRPapj4w3ZDJS7ImSl9beyDlATdGjtZ", 
+		//				"seCevpBGpkvBEmuUZyCHHaJAAqHGVitVwkw2dEEI");
 
 		_listToDoTask = (ListView) findViewById(R.id.list_todo_tasks);
 

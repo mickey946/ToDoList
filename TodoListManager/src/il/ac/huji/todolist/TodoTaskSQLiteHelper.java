@@ -7,15 +7,15 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.provider.Settings.Secure;
+//import android.provider.Settings.Secure;
 import android.util.Log;
 
-import com.parse.FindCallback;
-import com.parse.ParseException;
-import com.parse.ParseObject;
-import com.parse.ParseQuery;
-
-import com.parse.SaveCallback;
+//import com.parse.FindCallback;
+//import com.parse.ParseException;
+//import com.parse.ParseObject;
+//import com.parse.ParseQuery;
+//
+//import com.parse.SaveCallback;
 
 public class TodoTaskSQLiteHelper extends SQLiteOpenHelper {
 
@@ -30,9 +30,9 @@ public class TodoTaskSQLiteHelper extends SQLiteOpenHelper {
 	private static final int DATABASE_VERSION = 1;
 
 	/** Unique ID for the device */
-	private String _androidID;
+	//	private String _androidID;
 
-	private Context _context;
+	//	private Context _context;
 
 	// Database creation sql statement
 	private static final String DATABASE_CREATE = 
@@ -45,9 +45,9 @@ public class TodoTaskSQLiteHelper extends SQLiteOpenHelper {
 
 	private TodoTaskSQLiteHelper(Context context) {
 		super(context, DATABASE_NAME, null, DATABASE_VERSION);
-		this._context = context;
-		this._androidID = Secure.getString(_context.getContentResolver(),
-				Secure.ANDROID_ID); 
+		//		this._context = context;
+		//		this._androidID = Secure.getString(_context.getContentResolver(),
+		//				Secure.ANDROID_ID); 
 	}
 
 	public static TodoTaskSQLiteHelper getInstanse(Context context) {
@@ -64,21 +64,21 @@ public class TodoTaskSQLiteHelper extends SQLiteOpenHelper {
 		Log.i(TodoTaskSQLiteHelper.class.getName(), 
 				"Creating database");
 		database.execSQL(DATABASE_CREATE);
-		
-		// clear Parse database (delete all existing objects)
-		ParseQuery<ParseObject> query = ParseQuery.getQuery(_androidID);
-		query.whereExists("ID"); // actually this is all of the data
-		query.findInBackground(new FindCallback<ParseObject>() {
-		    public void done(List<ParseObject> tasks, ParseException e) {
-		        if (e == null) {
-		            for(ParseObject task : tasks) {
-		            	task.deleteEventually();
-		            }
-		        } else {
-		            // Well, shit.
-		        }
-		    }
-		});
+
+		//		// clear Parse database (delete all existing objects)
+		//		ParseQuery<ParseObject> query = ParseQuery.getQuery(_androidID);
+		//		query.whereExists("ID"); // actually this is all of the data
+		//		query.findInBackground(new FindCallback<ParseObject>() {
+		//		    public void done(List<ParseObject> tasks, ParseException e) {
+		//		        if (e == null) {
+		//		            for(ParseObject task : tasks) {
+		//		            	task.deleteEventually();
+		//		            }
+		//		        } else {
+		//		            // Well, shit.
+		//		        }
+		//		    }
+		//		});
 	}
 
 	@Override
@@ -101,32 +101,32 @@ public class TodoTaskSQLiteHelper extends SQLiteOpenHelper {
 		SQLiteDatabase db = this.getWritableDatabase();
 
 		final ContentValues values = new ContentValues();
-		values.put(COLUMN_TITLE, task.getTitle()); 	// task title
+		values.put(COLUMN_TITLE, task.getTitle()); // task title
 		values.put(COLUMN_DUE, task.getDue()); // task due
-		
-		long id = db.insert(TABLE_TASKS, null, values);
+
+		db.insert(TABLE_TASKS, null, values);
 		db.close(); // closing database connection
 
 		// insert row to Parse database
-		final ParseObject parseTask = new ParseObject(_androidID);
-		parseTask.put("ID", id);
-		parseTask.put("Title", task.getTitle());
-		parseTask.put("Due", task.getDue());
-
-		parseTask.saveEventually(new SaveCallback() {
-
-			@Override
-			public void done(ParseException e) {
-				if (e == null) {
-					// Success!
-					String objectId = parseTask.getObjectId();
-					Log.i(TodoTaskSQLiteHelper.class.getName(),
-							"Parse ID: " + objectId);
-				} else {
-					// Failure!
-				}
-			}
-		});
+		//		final ParseObject parseTask = new ParseObject(_androidID);
+		//		parseTask.put("ID", id);
+		//		parseTask.put("Title", task.getTitle());
+		//		parseTask.put("Due", task.getDue());
+		//
+		//		parseTask.saveEventually(new SaveCallback() {
+		//
+		//			@Override
+		//			public void done(ParseException e) {
+		//				if (e == null) {
+		//					// Success!
+		//					String objectId = parseTask.getObjectId();
+		//					Log.i(TodoTaskSQLiteHelper.class.getName(),
+		//							"Parse ID: " + objectId);
+		//				} else {
+		//					// Failure!
+		//				}
+		//			}
+		//		});
 
 		Log.i(TodoTaskSQLiteHelper.class.getName(),
 				"Inserting new task: " + task.getTitle() + " due: " + task.getDue());
@@ -179,17 +179,17 @@ public class TodoTaskSQLiteHelper extends SQLiteOpenHelper {
 				new String[] { String.valueOf(id) });
 		db.close();
 
-		ParseQuery<ParseObject> query = ParseQuery.getQuery(_androidID);
-		query.whereEqualTo("ID", id);
-		query.findInBackground(new FindCallback<ParseObject>() {
-
-			@Override
-			public void done(List<ParseObject> objects, ParseException e) {
-				for (ParseObject parseTask : objects) {
-					parseTask.deleteEventually();
-				}				
-			}
-		});
+		//		ParseQuery<ParseObject> query = ParseQuery.getQuery(_androidID);
+		//		query.whereEqualTo("ID", id);
+		//		query.findInBackground(new FindCallback<ParseObject>() {
+		//
+		//			@Override
+		//			public void done(List<ParseObject> objects, ParseException e) {
+		//				for (ParseObject parseTask : objects) {
+		//					parseTask.deleteEventually();
+		//				}				
+		//			}
+		//		});
 
 		Log.i(TodoTaskSQLiteHelper.class.getName(), 
 				"Deleted task with id: " + id);
