@@ -1,7 +1,5 @@
 package il.ac.huji.todolist;
 
-import java.util.List;
-
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;

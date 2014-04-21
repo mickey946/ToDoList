@@ -6,6 +6,7 @@ import java.util.Date;
 
 //import com.parse.Parse;
 
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -34,6 +35,39 @@ public class TodoListManagerActivity extends Activity implements DeleteTaskDialo
 	private TodoTaskSQLiteHelper _helper;
 	private ActionTaskDialog _actionTaskDialog;
 	private ListView _listToDoTask;
+
+	private class TodoTaskSaver extends AsyncTask<TodoTask, Void, Void> {
+
+		@Override
+		protected Void doInBackground(TodoTask... tasks) {
+			for(TodoTask task : tasks) {
+				_helper.addTask(task);
+			}
+			return null;
+		}
+
+		@Override
+		protected void onPostExecute(Void nothing) {
+			_adapter.changeCursor(_helper.getAllTasks());	
+		}
+	}
+
+	private class TodoTaskDeleter extends AsyncTask<Integer, Void, Void> {
+
+		@Override
+		protected Void doInBackground(Integer... positions) {
+			for (Integer pos : positions) {
+				_helper.deleteTask(pos);
+			}
+			return null;
+		}
+
+		@Override
+		protected void onPostExecute(Void nothing) {
+			_adapter.changeCursor(_helper.getAllTasks());	
+		}
+
+	}
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -109,8 +143,8 @@ public class TodoListManagerActivity extends Activity implements DeleteTaskDialo
 			// add the item
 			if(task != null) {
 				if(task.length() > 0) {
-					_helper.addTask(new TodoTask(task, date));
-					_adapter.changeCursor(_helper.getAllTasks());			
+					TodoTaskSaver saver = new TodoTaskSaver();
+					saver.execute(new TodoTask(task, date));
 				}
 			}
 		}
@@ -118,8 +152,8 @@ public class TodoListManagerActivity extends Activity implements DeleteTaskDialo
 
 	@Override
 	public void onDialogPositiveClick(ActionTaskDialog dialog) {
-		_helper.deleteTask(dialog.getPos());
-		_adapter.changeCursor(_helper.getAllTasks());
+		TodoTaskDeleter deleter = new TodoTaskDeleter();
+		deleter.execute(dialog.getPos());
 	}
 
 	@Override
