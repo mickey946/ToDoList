@@ -2,14 +2,14 @@ package il.ac.huji.todolist;
 
 public class TodoTask {
 	
-	private int _id;
+	private Long _id;
 	private String _title;
 	private long _due;
 	
 	public TodoTask() {
 	}
 
-	public TodoTask(int id, String title, long due) {
+	public TodoTask(Long id, String title, long due) {
 		this._id = id;
 		this._title = title;
 		this._due = due;
@@ -24,11 +24,11 @@ public class TodoTask {
 		this._title = title;
 	}
 
-	public int getID() {
+	public Long getID() {
 		return _id;
 	}
 
-	public void setID(int id) {
+	public void setID(Long id) {
 		this._id = id;
 	}
 

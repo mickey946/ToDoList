@@ -20,9 +20,9 @@ public class TodoTaskSQLiteHelper extends SQLiteOpenHelper {
 	private static TodoTaskSQLiteHelper _instanse;
 
 	private static final String TABLE_TASKS = "todo_tasks";
-	private static final String COLUMN_ID = "_id";
-	private static final String COLUMN_TITLE = "title";
-	private static final String COLUMN_DUE = "due";
+	static final String COLUMN_ID = "_id";
+	static final String COLUMN_TITLE = "title";
+	static final String COLUMN_DUE = "due";
 
 	private static final String DATABASE_NAME = "todo_db";
 	private static final int DATABASE_VERSION = 1;
@@ -94,7 +94,7 @@ public class TodoTaskSQLiteHelper extends SQLiteOpenHelper {
 	 * A a new task to the database.
 	 * @param task The task to add.
 	 */
-	public void addTask(TodoTask task) {
+	public Long addTask(TodoTask task) {
 		// inserting row to local database
 		SQLiteDatabase db = this.getWritableDatabase();
 
@@ -102,7 +102,7 @@ public class TodoTaskSQLiteHelper extends SQLiteOpenHelper {
 		values.put(COLUMN_TITLE, task.getTitle()); // task title
 		values.put(COLUMN_DUE, task.getDue()); // task due
 
-		db.insert(TABLE_TASKS, null, values);
+		Long id = db.insert(TABLE_TASKS, null, values);
 		db.close(); // closing database connection
 
 		// insert row to Parse database
@@ -128,6 +128,7 @@ public class TodoTaskSQLiteHelper extends SQLiteOpenHelper {
 
 		Log.i(TodoTaskSQLiteHelper.class.getName(),
 				"Inserting new task: " + task.getTitle() + " due: " + task.getDue());
+		return id;
 	}
 
 	/**
@@ -135,7 +136,7 @@ public class TodoTaskSQLiteHelper extends SQLiteOpenHelper {
 	 * @param id The id of the task as it appears in the database.
 	 * @return The TodoTask with the corresponding id.
 	 */
-	public TodoTask getTask(int id) {
+	public TodoTask getTask(long id) {
 		SQLiteDatabase db = this.getReadableDatabase();
 
 		Cursor cursor = db.query(
@@ -148,7 +149,7 @@ public class TodoTaskSQLiteHelper extends SQLiteOpenHelper {
 			cursor.moveToFirst();
 
 		return new TodoTask(
-				cursor.getInt(0), // id
+				cursor.getLong(0), // id
 				cursor.getString(1), // title
 				cursor.getLong(2) // due date
 				);
@@ -170,7 +171,7 @@ public class TodoTaskSQLiteHelper extends SQLiteOpenHelper {
 	 * Delete a task with an id.
 	 * @param id The id of the task as it appears in the database.
 	 */
-	public void deleteTask(int id) {
+	public void deleteTask(long id) {
 		SQLiteDatabase db = this.getWritableDatabase();
 
 		db.delete(TABLE_TASKS, COLUMN_ID + " = ?",

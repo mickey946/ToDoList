@@ -2,9 +2,14 @@ package il.ac.huji.todolist;
 
 import il.ac.huji.todolist.ActionTaskDialog.DeleteTaskDialogListener;
 
+import java.util.ArrayList;
 import java.util.Date;
 
 //import com.parse.Parse;
+
+
+
+
 
 import android.os.AsyncTask;
 import android.os.Build;
@@ -31,40 +36,80 @@ import android.widget.ListView;
  */
 public class TodoListManagerActivity extends Activity implements DeleteTaskDialogListener {
 
-	private TodoTaskCursorAdapter _adapter;
+	//	private TodoTaskCursorAdapter _adapter;
+	private TodoTaskArrayAdapter _adapter;
 	private TodoTaskSQLiteHelper _helper;
 	private ActionTaskDialog _actionTaskDialog;
 	private ListView _listToDoTask;
 
-	private class TodoTaskSaver extends AsyncTask<TodoTask, Void, Void> {
+	private class TodoTaskSaver extends AsyncTask<TodoTask, Void, TodoTask[]> {
 
 		@Override
-		protected Void doInBackground(TodoTask... tasks) {
+		protected TodoTask[] doInBackground(TodoTask... tasks) {
 			for(TodoTask task : tasks) {
-				_helper.addTask(task);
+				Long id = _helper.addTask(task);
+				task.setID(id);
 			}
-			return null;
+			return tasks;
 		}
 
 		@Override
-		protected void onPostExecute(Void nothing) {
-			_adapter.changeCursor(_helper.getAllTasks());	
+		protected void onPostExecute(TodoTask[] tasks) {
+			for (TodoTask task : tasks)
+				_adapter.add(task);
+			_adapter.notifyDataSetChanged();
 		}
+
 	}
 
-	private class TodoTaskDeleter extends AsyncTask<Integer, Void, Void> {
+	private class TodoTaskDeleter extends AsyncTask<TodoTask, Void, TodoTask[]> {
 
 		@Override
-		protected Void doInBackground(Integer... positions) {
-			for (Integer pos : positions) {
-				_helper.deleteTask(pos);
+		protected TodoTask[] doInBackground(TodoTask... tasks) {
+			for (TodoTask task : tasks) {
+				_helper.deleteTask(task.getID());
+			}
+			return tasks;
+		}
+
+		@Override
+		protected void onPostExecute(TodoTask[] tasks) {
+			for (TodoTask task : tasks)
+				_adapter.remove(task);
+			_adapter.notifyDataSetChanged();	
+		}
+
+	}
+
+	private class TodoTaskLoader extends AsyncTask<Cursor, TodoTask, Void> {
+
+		@Override
+		protected Void doInBackground(Cursor... cursors) {
+			Cursor current = cursors[0];
+			while (current.moveToNext()) {
+				Long id = current.getLong(current.getColumnIndex(TodoTaskSQLiteHelper.COLUMN_ID));
+				Long due = current.getLong(current.getColumnIndex(TodoTaskSQLiteHelper.COLUMN_DUE));
+				String title = current.getString(current.getColumnIndex(TodoTaskSQLiteHelper.COLUMN_TITLE));
+
+				TodoTask task = new TodoTask(id, title, due);
+
+				try {
+					Thread.sleep(500);
+				} catch (InterruptedException e) { 
+					// well, shit
+				}
+
+				publishProgress(task);
 			}
 			return null;
 		}
 
 		@Override
-		protected void onPostExecute(Void nothing) {
-			_adapter.changeCursor(_helper.getAllTasks());	
+		protected void onProgressUpdate(TodoTask... tasks) {
+			for (TodoTask task : tasks){
+				_adapter.add(task);
+			}
+			_adapter.notifyDataSetChanged();
 		}
 
 	}
@@ -81,13 +126,16 @@ public class TodoListManagerActivity extends Activity implements DeleteTaskDialo
 
 		_listToDoTask = (ListView) findViewById(R.id.list_todo_tasks);
 
+		_adapter = new TodoTaskArrayAdapter(getApplicationContext(), 
+				new ArrayList<TodoTask>());
+		_listToDoTask.setAdapter(_adapter);
+
 		new Handler().post(new Runnable() {
 
 			@Override
 			public void run() {	
-				_adapter = new TodoTaskCursorAdapter(TodoListManagerActivity.this, 
-						_helper.getAllTasks());
-				_listToDoTask.setAdapter(_adapter);
+				TodoTaskLoader loader = new TodoTaskLoader();
+				loader.execute(_helper.getAllTasks());
 			}
 
 		});
@@ -97,9 +145,8 @@ public class TodoListManagerActivity extends Activity implements DeleteTaskDialo
 			@TargetApi(Build.VERSION_CODES.HONEYCOMB)
 			@SuppressLint("NewApi")
 			public boolean onItemLongClick(AdapterView<?> parent, View child, int pos, long id) {
-				Cursor current = (Cursor)_adapter.getItem(pos);
-				_actionTaskDialog = new ActionTaskDialog(current.getInt(0), 
-						new TodoTask(current.getString(1)));
+				TodoTask task = _adapter.getItem(pos);
+				_actionTaskDialog = new ActionTaskDialog(pos, task);
 				_actionTaskDialog.show(getFragmentManager(), "actionTask");
 				return true;
 			}
@@ -153,7 +200,8 @@ public class TodoListManagerActivity extends Activity implements DeleteTaskDialo
 	@Override
 	public void onDialogPositiveClick(ActionTaskDialog dialog) {
 		TodoTaskDeleter deleter = new TodoTaskDeleter();
-		deleter.execute(dialog.getPos());
+		TodoTask task = _adapter.getItem(dialog.getPos());
+		deleter.execute(task);
 	}
 
 	@Override
